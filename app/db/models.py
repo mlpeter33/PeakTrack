@@ -158,7 +158,7 @@ class Result(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     competency_id = Column(Integer, ForeignKey("competencies.id"))
-    result = Column(Integer)
+    score = Column(Integer)
     created_at = Column(DateTime, server_default=func.now())
     status = Column(Integer, default=1)
 
