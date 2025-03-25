@@ -167,7 +167,7 @@ class Result(Base):
     skill = relationship("skill", back_populates="results")
 
 
-class AreaSkill(base):
+class AreaSkill(Base):
     __tablename__="areas_skills"
 
     id = Column(Integer, primary_key=True, index=True)
