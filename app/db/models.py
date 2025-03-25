@@ -13,14 +13,15 @@ class User(Base):
     email = Column(String, unique=True, nullable=False)
     area_id = Column(Integer, ForeignKey("areas.id"))
     company_id = Column(Integer, ForeignKey("companies.id"))
-    created_at = Column(DateTime, server_default=func.now())
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
-    status = Column(Integer, default=1)
+    status = Column(Integer, default=1, nullable=False)
 
     roles = relationship("UserRole", back_populates="user")
     area = relationship("Area", back_populates="users")
     company = relationship("Company", back_populates="users")
     results = relationship("Result", back_populates="user")
+    closed_periods = relationship("Period", back_populates="closed_by_user")
 
 
 class Role(Base):
@@ -29,9 +30,9 @@ class Role(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False)
     description = Column(String)
-    created_at = Column(DateTime, server_default=func.now())
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
-    status = Column(Integer, default=1)
+    status = Column(Integer, default=1, nullable=False)
 
     users = relationship("UserRole", back_populates="role")
     permissions = relationship("RolePermission", back_populates="role")
@@ -42,9 +43,9 @@ class UserRole(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
-    role_id = Column(Integer, ForeignKey("roles.id"))
+    role_id = Column(Integer, ForeignKey("roles.id"), nullable=False)
     created_at = Column(DateTime, server_default=func.now())
-    status = Column(Integer, default=1)
+    status = Column(Integer, default=1, nullable=False)
 
     user = relationship("User", back_populates="roles")
     role = relationship("Role", back_populates="users")
@@ -56,9 +57,9 @@ class Permission(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False)
     description = Column(String)
-    created_at = Column(DateTime, server_default=func.now())
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
-    status = Column(Integer, default=1)
+    status = Column(Integer, default=1, nullable=False)
 
     roles = relationship("RolePermission", back_populates="permission")
 
@@ -69,8 +70,8 @@ class RolePermission(Base):
     id = Column(Integer, primary_key=True, index=True)
     role_id = Column(Integer, ForeignKey("roles.id"))
     permission_id = Column(Integer, ForeignKey("permissions.id"))
-    created_at = Column(DateTime, server_default=func.now())
-    status = Column(Integer, default=1)
+    created_at = Column(DateTime, server_default=func.now()), nullable=False
+    status = Column(Integer, default=1, nullable=False)
 
     role = relationship("Role", back_populates="permissions")
     permission = relationship("Permission", back_populates="roles")
@@ -82,11 +83,11 @@ class Company(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False)
     description = Column(String)
-    created_at = Column(DateTime, server_default=func.now())
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
-    status = Column(Integer, default=1)
+    status = Column(Integer, default=1), nullable=False
 
-    evaluations_setup = relationship("PeriodCompanyAreaCompetency", back_populates="company")
+    evaluations_setup = relationship("EvaluationSetup", back_populates="company")
     users = relationship("User", back_populates="company")
 
 
@@ -96,11 +97,11 @@ class Area(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False)
     description = Column(String)
-    created_at = Column(DateTime, server_default=func.now())
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
-    status = Column(Integer, default=1)
+    status = Column(Integer, default=1, nullable=False)
 
-    evaluations_setup = relationship("PeriodCompanyAreaCompetency", back_populates="area")
+    evaluations_setup = relationship("EvaluationSetup", back_populates="area")
     users = relationship("User", back_populates="area")
 
 
@@ -113,12 +114,12 @@ class Period(Base):
     end_date = Column(DateTime)
     closed_by = Column(Integer, ForeignKey("users.id"))
     auto_close = Column(Integer, default=0)
-    created_at = Column(DateTime, server_default=func.now())
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
-    status = Column(Integer, default=1)
+    status = Column(Integer, default=1, nullable=False)
 
-    evaluations_setup = relationship("PeriodCompanyAreaCompetency", back_populates="period")
-    closed_by_user = relationship("User")
+    evaluations_setup = relationship("EvaluationSetup", back_populates="period")
+    closed_by_user = relationship("User", back_populates="closed_periods")
 
 
 class Competency(Base):
@@ -127,24 +128,24 @@ class Competency(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False)
     description = Column(String)
-    created_at = Column(DateTime, server_default=func.now())
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
-    status = Column(Integer, default=1)
+    status = Column(Integer, default=1, nullable=False)
 
-    evaluations_setup = relationship("PeriodCompanyAreaCompetency", back_populates="competency")
+    evaluations_setup = relationship("EvaluationSetup", back_populates="competency")
     results = relationship("Result", back_populates="competency")
 
 
-class PeriodCompanyAreaCompetency(Base):
-    __tablename__= "periods_companies_areas_competencies"
+class EvaluationSetup(Base):
+    __tablename__= "evaluations_setup"
 
     id = Column(Integer, primary_key=True, index=True)
     period_id = Column(Integer, ForeignKey("periods.id"))
     company_id = Column(Integer, ForeignKey("companies.id"))
     area_id = Column(Integer, ForeignKey("areas.id"))
     competency_id = Column(Integer, ForeignKey("competencies.id"))
-    created_at = Column(DateTime, server_default=func.now())
-    status = Column(Integer, default=1)
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
+    status = Column(Integer, default=1, nullable=False)
 
     period = relationship("Period", back_populates="evaluations_setup")
     company = relationship("Company", back_populates="evaluations_setup")
@@ -159,8 +160,8 @@ class Result(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     competency_id = Column(Integer, ForeignKey("competencies.id"))
     score = Column(Integer)
-    created_at = Column(DateTime, server_default=func.now())
-    status = Column(Integer, default=1)
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
+    status = Column(Integer, default=1, nullable=False)
 
     user = relationship("User", back_populates="results")
     competency = relationship("Competency", back_populates="results")
