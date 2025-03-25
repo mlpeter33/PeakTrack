@@ -114,7 +114,7 @@ class Period(Base):
     start_date = Column(DateTime)
     end_date = Column(DateTime)
     closed_by = Column(Integer, ForeignKey("users.id"))
-    auto_close = Column(Integer, default=0)
+    auto_close = Column(Integer, default=0) #0 for no, 1 for yes
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
     status = Column(Integer, default=1, nullable=False)
@@ -159,7 +159,7 @@ class Result(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     skill_id = Column(Integer, ForeignKey("skills.id"))
-    score = Column(Integer)
+    score = Column(float)
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
     status = Column(Integer, default=1, nullable=False)
 
