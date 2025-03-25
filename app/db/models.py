@@ -137,7 +137,7 @@ class Skill(Base):
     areas = relationship("AreaSkill", back_populates="skill")
     results = relationship("Result", back_populates="skill")
 
-
+#TODO: refactor evaluation into period_company and company_area for a better usability
 class EvaluationSetup(Base):
     __tablename__= "evaluations_setup"
 
