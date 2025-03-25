@@ -103,6 +103,7 @@ class Area(Base):
 
     evaluations_setup = relationship("EvaluationSetup", back_populates="area")
     users = relationship("User", back_populates="area")
+    skills = relationship("AreaSkill", back_populates="area")
 
 
 class Period(Base):
@@ -122,18 +123,19 @@ class Period(Base):
     closed_by_user = relationship("User", back_populates="closed_periods")
 
 
-class Competency(Base):
-    __tablename__= "competencies"
+class Skill(Base):
+    __tablename__= "skills"
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False)
     description = Column(String)
+    type = Column(Integer, default=0) #0 for soft skills, 1 for technical skills
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
     status = Column(Integer, default=1, nullable=False)
 
-    evaluations_setup = relationship("EvaluationSetup", back_populates="competency")
-    results = relationship("Result", back_populates="competency")
+    areas = relationship("AreaSkill", back_populates="skill")
+    results = relationship("Result", back_populates="skill")
 
 
 class EvaluationSetup(Base):
@@ -143,14 +145,12 @@ class EvaluationSetup(Base):
     period_id = Column(Integer, ForeignKey("periods.id"))
     company_id = Column(Integer, ForeignKey("companies.id"))
     area_id = Column(Integer, ForeignKey("areas.id"))
-    competency_id = Column(Integer, ForeignKey("competencies.id"))
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
     status = Column(Integer, default=1, nullable=False)
 
     period = relationship("Period", back_populates="evaluations_setup")
     company = relationship("Company", back_populates="evaluations_setup")
     area = relationship("Area", back_populates="evaluations_setup")
-    competency = relationship("Competency", back_populates="evaluations_setup")
 
 
 class Result(Base):
@@ -158,10 +158,23 @@ class Result(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
-    competency_id = Column(Integer, ForeignKey("competencies.id"))
+    skill_id = Column(Integer, ForeignKey("skills.id"))
     score = Column(Integer)
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
     status = Column(Integer, default=1, nullable=False)
 
     user = relationship("User", back_populates="results")
-    competency = relationship("Competency", back_populates="results")
+    skill = relationship("skill", back_populates="results")
+
+
+class AreaSkill(base):
+    __tablename__="areas_skills"
+
+    id = Column(Integer, primary_key=True, index=True)
+    area_id = Column(Integer, ForeignKey("area.id"))
+    skill_id = Column(Integer, ForeignKey("skills.id"))
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
+    status = Column(Integer, default=1, nullable=False)
+
+    area = relationship("Area", back_populates="skills")
+    skill = relationship("Skill", back_populates="area")

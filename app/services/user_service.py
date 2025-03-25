@@ -13,7 +13,6 @@ def create_user(db: Session, name: str, email: str, area_id: int, company_id: in
 
 @handle_exceptions
 def get_user_by_id(db: Session, user_id: int):
-
     return db.query(User).filter(User.id == user_id).first()
 
 
