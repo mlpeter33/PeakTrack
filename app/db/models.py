@@ -168,7 +168,7 @@ class AreaSkill(Base):
     status = Column(Integer, default=1, nullable=False)
 
     area = relationship("Area", back_populates="skills")
-    skill = relationship("Skill", back_populates="area")
+    skill = relationship("Skill", back_populates="areas")
 
 class CompanyArea(Base):
     __tablename__= "companies_areas"
