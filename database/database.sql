@@ -1,0 +1,123 @@
+CREATE DATABASE PeakTrack;
+GO
+
+USE PeakTrack;
+GO
+
+CREATE TABLE users (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    name VARCHAR(255) UNIQUE NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    area_id INT FOREIGN KEY REFERENCES areas(id),
+    company_id INT FOREIGN KEY REFERENCES companies(id),
+    created_at DATETIME DEFAULT GETDATE() NOT NULL,
+    updated_at DATETIME DEFAULT GETDATE() NOT NULL,
+    status INT DEFAULT 1 NOT NULL
+);
+
+CREATE TABLE roles (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    name VARCHAR(255) UNIQUE NOT NULL,
+    description VARCHAR(255),
+    created_at DATETIME DEFAULT GETDATE() NOT NULL,
+    updated_at DATETIME DEFAULT GETDATE() NOT NULL,
+    status INT DEFAULT 1 NOT NULL
+);
+
+CREATE TABLE permissions (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    name VARCHAR(255) UNIQUE NOT NULL,
+    description VARCHAR(255),
+    created_at DATETIME DEFAULT GETDATE() NOT NULL,
+    updated_at DATETIME DEFAULT GETDATE() NOT NULL,
+    status INT DEFAULT 1 NOT NULL
+);
+
+CREATE TABLE areas (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    name VARCHAR(255) UNIQUE NOT NULL,
+    description VARCHAR(255),
+    created_at DATETIME DEFAULT GETDATE() NOT NULL,
+    updated_at DATETIME DEFAULT GETDATE() NOT NULL,
+    status INT DEFAULT 1 NOT NULL
+);
+
+CREATE TABLE companies (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    name VARCHAR(255) UNIQUE NOT NULL,
+    description VARCHAR(255),
+    created_at DATETIME DEFAULT GETDATE() NOT NULL,
+    updated_at DATETIME DEFAULT GETDATE() NOT NULL,
+    status INT DEFAULT 1 NOT NULL
+);
+
+CREATE TABLE periods (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    name VARCHAR(255) UNIQUE NOT NULL,
+    start_date DATETIME,
+    end_date DATETIME,
+    closed_by INT FOREIGN KEY REFERENCES users(id),
+    auto_close INT DEFAULT 0,
+    created_at DATETIME DEFAULT GETDATE() NOT NULL,
+    updated_at DATETIME DEFAULT GETDATE() NOT NULL,
+    status INT DEFAULT 1 NOT NULL
+);
+
+CREATE TABLE skills (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    name VARCHAR(255) UNIQUE NOT NULL,
+    description VARCHAR(255),
+    type INT DEFAULT 0,
+    created_at DATETIME DEFAULT GETDATE() NOT NULL,
+    updated_at DATETIME DEFAULT GETDATE() NOT NULL,
+    status INT DEFAULT 1 NOT NULL
+);
+
+CREATE TABLE results (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    user_id INT FOREIGN KEY REFERENCES users(id),
+    skill_id INT FOREIGN KEY REFERENCES skills(id),
+    score DECIMAL(5,2),
+    created_at DATETIME DEFAULT GETDATE() NOT NULL,
+    status INT DEFAULT 1 NOT NULL
+);
+
+CREATE TABLE users_roles (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    user_id INT FOREIGN KEY REFERENCES users(id),
+    role_id INT FOREIGN KEY REFERENCES roles(id),
+    created_at DATETIME DEFAULT GETDATE() NOT NULL,
+    status INT DEFAULT 1 NOT NULL
+);
+
+CREATE TABLE roles_permissions (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    role_id INT FOREIGN KEY REFERENCES roles(id),
+    permission_id INT FOREIGN KEY REFERENCES permissions(id),
+    created_at DATETIME DEFAULT GETDATE() NOT NULL,
+    status INT DEFAULT 1 NOT NULL
+);
+
+CREATE TABLE areas_skills (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    area_id INT FOREIGN KEY REFERENCES areas(id),
+    skill_id INT FOREIGN KEY REFERENCES skills(id),
+    created_at DATETIME DEFAULT GETDATE() NOT NULL,
+    status INT DEFAULT 1 NOT NULL
+);
+
+CREATE TABLE companies_areas (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    company_id INT FOREIGN KEY REFERENCES companies(id),
+    area_id INT FOREIGN KEY REFERENCES areas(id),
+    created_at DATETIME DEFAULT GETDATE() NOT NULL,
+    status INT DEFAULT 1 NOT NULL
+);
+
+CREATE TABLE periods_companies (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    period_id INT FOREIGN KEY REFERENCES periods(id),
+    company_id INT FOREIGN KEY REFERENCES companies(id),
+    created_at DATETIME DEFAULT GETDATE() NOT NULL,
+    status INT DEFAULT 1 NOT NULL
+);
